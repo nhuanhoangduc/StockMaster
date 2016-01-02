@@ -23,6 +23,30 @@ var writeStockRecord = function(stockRecord, callback) {
 };
 
 /*
+ * Get data of a stock from database ulti date with time period
+ * @param {string} stockName
+ * @param {string} date format date : yyyy-mm-dd
+ * @param {Number} timePeriod
+ * @param {function} callback(err, stockRecords)
+ */
+var getStockUtilDate = function(stockName, date, timePeriod, callback) {
+  Stock.find({
+    name: stockName,
+    date: {
+      $lte: date
+    }
+  }).sort({
+    date: -1
+  }).limit(timePeriod).exec(function(err, records) {
+    if (records.length === 0) {
+      callback('records null');
+    } else {
+      callback(err, records);
+    }
+  });
+};
+
+/*
  * Delete all data of a stock from database between two dates
  * @param {string} stockName
  * @param {string} fromDate format date : yyyy-mm-dd
@@ -58,6 +82,7 @@ var removeStock = function(stockName, callback) {
 /* exports all function */
 module.exports = {
   writeStockRecord: writeStockRecord,
+  getStockUtilDate: getStockUtilDate,
   removeStockBetweenDates: removeStockBetweenDates,
   removeStock: removeStock
 };
