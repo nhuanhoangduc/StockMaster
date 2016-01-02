@@ -25,8 +25,8 @@ module.exports = function() {
 
   // set up schedule
   sche.scheduleJob({
-    hour: 14,
-    minute: 38,
+    hour: 8,
+    minute: 6,
     dayOfWeek: [0, 1, 2, 3, 4, 5, 6]
   }, function() {
     var date = new Date();
