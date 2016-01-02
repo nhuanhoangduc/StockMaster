@@ -77,7 +77,7 @@ var betweenTwoDates = function(stockName, fromDate, toDate, callback) {
  * @param {string array} listStocks
  * @param {string} fromDate format date : yyyy-mm-dd
  * @param {string} toDate format date : yyyy-mm-dd
- * @param {function} callback(err)
+ * @param {function} callback(listStockFail, time)
  */
 var listOfStocks = function(listStocks, fromDate, toDate, callback) {
   var listStockFail = [];

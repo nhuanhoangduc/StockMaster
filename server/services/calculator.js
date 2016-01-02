@@ -4,7 +4,7 @@
  */
 
 
-/* init underscore */
+/* init modules */
 var _ = require('underscore');
 
 /*

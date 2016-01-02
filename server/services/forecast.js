@@ -4,11 +4,12 @@
  */
 
 
-/* init underscore */
+/* init modules */
 var _ = require('underscore');
 var async = require('async');
 var asyncConfig = require('../configs/async');
 var stockDB = require('./dataHandle/stockDB');
+var shouldBuyDB = require('./dataHandle/shouldBuyDB');
 var calculator = require('./calculator');
 
 
@@ -75,6 +76,8 @@ var shouldBuying = function(stockName, date, callback) {
         var subClose1 = smaData['close'] - smaData['closeBefore1'];
         var subClose2 = smaData['closeBefore1'] - smaData['closeBefore2'];
 
+        result.close = smaData['close'];
+
         // check conditions
         if (subSma10 > 0 && subSma20 > 0 && subClose1 > 0 && subClose2 > 0 && subSma200 > 0 && subSma50 > 0) {
           if (smaData['close'] > smaData['sma20'] && smaData['close'] > smaData['sma10'] && subSma10 > subSma20) {
@@ -94,6 +97,38 @@ var shouldBuying = function(stockName, date, callback) {
     function(err, result) {
       callback(err, result);
     });
+};
+
+/*
+ * Update list of should buy stock by date
+ * @param {Array} list Should buy list
+ * @param {String} date format date: yyyy-mm-dd
+ */
+var updateShouldBuyDB = function(list, date) {
+  async.waterfall([
+    // remove exits data
+    function(next) {
+      shouldBuyDB.removeBetweenDates(date, function(err) {
+        next(err);
+      });
+    },
+
+    // write data to database
+    function(next) {
+      async.eachLimit(list, asyncConfig.eachLimit, function(result, nextItem) {
+        shouldBuyDB.write(result, function() {
+          nextItem();
+        })
+      }, function() {
+        next();
+      });
+    }
+  ], function(err) {
+    if (err)
+      return console.log('Update should buy list error');
+
+    console.log('Update should buy list successful');
+  });
 };
 
 /*
@@ -117,6 +152,7 @@ var shouldBuyingList = function(listStocks, date, callback) {
       nextItem();
     });
   }, function() {
+    updateShouldBuyDB(listResults, date);
     callback(null, listResults);
   });
 };
