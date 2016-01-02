@@ -26,7 +26,7 @@ module.exports = function() {
   // set up schedule
   sche.scheduleJob({
     hour: 8,
-    minute: 6,
+    minute: 30,
     dayOfWeek: [0, 1, 2, 3, 4, 5, 6]
   }, function() {
     var date = new Date();
@@ -35,7 +35,7 @@ module.exports = function() {
     async.waterfall([
         // update list of StockMaster
         function(next) {
-          update.listOfStocks(list, '2014-12-31', dateParse, function(listFail, time) {
+          update.listOfStocks(list, dateParse, dateParse, function(listFail, time) {
             console.log();
             console.log('List fail update: ');
             console.log(listFail);
